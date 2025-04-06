@@ -12,14 +12,14 @@ func main() {
 		}
 	}()
 
-	for v := range filter(ch, func(v int) bool {
+	for v := range Filter(ch, func(v int) bool {
 		return v%2 == 0
 	}) {
 		fmt.Println(v)
 	}
 }
 
-func filter(ch <-chan int, f func(int) bool) <-chan int {
+func Filter(ch <-chan int, f func(int) bool) <-chan int {
 	out := make(chan int)
 
 	go func() {
