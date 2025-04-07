@@ -17,8 +17,8 @@ func main() {
 }
 
 func BatchProcess(addresses []string) result {
-	// buffer для того, чтобы не заблокироваться на записи и не выйти из горутины
-	// когда еще никто не слушает
+	// buffer to prevent blocking on write and exiting from goroutine
+	// when nobody is listening yet
 	out := make(chan result, 1)
 
 	for _, address := range addresses {
