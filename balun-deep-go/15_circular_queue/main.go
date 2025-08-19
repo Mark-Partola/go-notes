@@ -2,25 +2,25 @@ package main
 
 import "sync"
 
-type Queue interface {
-	Push(value int) bool
+type Queue[T comparable] interface {
+	Push(value T) bool
 	Pop() bool
-	GetFront() int
-	GetBack() int
+	GetFront() (T, bool)
+	GetBack() (T, bool)
 	IsEmpty() bool
 	IsFull() bool
 }
 
-type CircularQueue struct {
+type CircularQueue[T comparable] struct {
 	mu    sync.RWMutex
 	start int
 	end   int
 	size  int
 	count int
-	queue []int
+	queue []T
 }
 
-func (c *CircularQueue) Push(value int) bool {
+func (c *CircularQueue[T]) Push(value T) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -35,7 +35,7 @@ func (c *CircularQueue) Push(value int) bool {
 	return true
 }
 
-func (c *CircularQueue) Pop() bool {
+func (c *CircularQueue[T]) Pop() bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -49,57 +49,59 @@ func (c *CircularQueue) Pop() bool {
 	return true
 }
 
-func (c *CircularQueue) GetFront() int {
+func (c *CircularQueue[T]) GetFront() (T, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
 	if !c.isEmptyLocked() {
-		return c.queue[c.start]
+		return c.queue[c.start], true
 	}
 
-	return -1
+	var zero T
+	return zero, false
 }
 
-func (c *CircularQueue) GetBack() int {
+func (c *CircularQueue[T]) GetBack() (T, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
 	if !c.isEmptyLocked() {
 		end := (c.end - 1 + c.size) % c.size
-		return c.queue[end]
+		return c.queue[end], true
 	}
 
-	return -1
+	var zero T
+	return zero, false
 }
 
-func (c *CircularQueue) IsEmpty() bool {
+func (c *CircularQueue[T]) IsEmpty() bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
 	return c.isEmptyLocked()
 }
 
-func (c *CircularQueue) IsFull() bool {
+func (c *CircularQueue[T]) IsFull() bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
 	return c.isFullLocked()
 }
 
-func (c *CircularQueue) isFullLocked() bool {
+func (c *CircularQueue[T]) isFullLocked() bool {
 	return c.count == c.size
 }
 
-func (c *CircularQueue) isEmptyLocked() bool {
+func (c *CircularQueue[T]) isEmptyLocked() bool {
 	return c.count == 0
 }
 
-func NewCircularQueue(size int) Queue {
-	return &CircularQueue{
+func NewCircularQueue[T comparable](size int) Queue[T] {
+	return &CircularQueue[T]{
 		start: 0,
 		end:   0,
-		size:  size,
 		count: 0,
-		queue: make([]int, size),
+		size:  size,
+		queue: make([]T, size),
 	}
 }

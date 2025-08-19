@@ -8,13 +8,15 @@ import (
 
 func TestCircularQueue(t *testing.T) {
 	const queueSize = 3
-	queue := NewCircularQueue(queueSize)
+	queue := NewCircularQueue[int](queueSize)
 
 	assert.True(t, queue.IsEmpty())
 	assert.False(t, queue.IsFull())
 
-	assert.Equal(t, -1, queue.GetFront())
-	assert.Equal(t, -1, queue.GetBack())
+	v, _ := queue.GetFront()
+	assert.Equal(t, 0, v)
+	v, _ = queue.GetBack()
+	assert.Equal(t, 0, v)
 	assert.False(t, queue.Pop())
 
 	assert.True(t, queue.Push(1))
@@ -25,16 +27,20 @@ func TestCircularQueue(t *testing.T) {
 	assert.False(t, queue.IsEmpty())
 	assert.True(t, queue.IsFull())
 
-	assert.Equal(t, 1, queue.GetFront())
-	assert.Equal(t, 3, queue.GetBack())
+	v, _ = queue.GetFront()
+	assert.Equal(t, 1, v)
+	v, _ = queue.GetBack()
+	assert.Equal(t, 3, v)
 
 	assert.True(t, queue.Pop())
 	assert.False(t, queue.IsEmpty())
 	assert.False(t, queue.IsFull())
 	assert.True(t, queue.Push(4))
 
-	assert.Equal(t, 2, queue.GetFront())
-	assert.Equal(t, 4, queue.GetBack())
+	v, _ = queue.GetFront()
+	assert.Equal(t, 2, v)
+	v, _ = queue.GetBack()
+	assert.Equal(t, 4, v)
 
 	assert.True(t, queue.Pop())
 	assert.True(t, queue.Pop())
